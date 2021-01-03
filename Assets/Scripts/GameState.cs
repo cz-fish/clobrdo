@@ -13,14 +13,19 @@ public class GameState : MonoBehaviour
     public Sprite[] diceSprites;
 
     private List<GameObject> m_pieces = new List<GameObject>();
-    private int m_lastDiceRoll = 0;
     private GameObject m_diceValueImg;
+    private GameObject m_playerImg;
+    private GameObject m_rollButton;
+    private GameLogic m_gameLogic = new GameLogic();
 
     void Start()
     {
+        m_gameLogic.Start();
         InitializePieces();
         m_diceValueImg = GameObject.Find("diceValue");
         m_diceValueImg.SetActive(false);
+        m_playerImg = GameObject.Find("nextPlayerIcon");
+        m_rollButton = GameObject.Find("rollButton");
     }
 
     private void InitializePieces()
@@ -42,9 +47,21 @@ public class GameState : MonoBehaviour
 
     public void OnDiceRoll(int value)
     {
-        m_lastDiceRoll = value;
         m_diceValueImg.GetComponent<Image>().sprite = diceSprites[value - 1];
         m_diceValueImg.SetActive(true);
+        var diceResult = m_gameLogic.OnDiceRoll(value);
+        if (diceResult.nextPlayer != null) {
+            StartCoroutine("NextPlayer");
+
+        } else if (diceResult.humanTurn != null) { 
+        } else if (diceResult.aiTurn != null) {
+        }
     }
 
+    IEnumerator NextPlayer() {
+        yield return new WaitForSeconds(1.5f);
+        m_diceValueImg.SetActive(false);
+        m_playerImg.GetComponent<Image>().sprite = playerSprites[m_gameLogic.CurrentPlayer];
+        m_rollButton.SetActive(true);
+    }
 }

@@ -23,9 +23,9 @@ public class RollerButton : MonoBehaviour
 
     void RollDice()
     {
-        if (dice.activeSelf) {
-            return;
-        }
+        // Disable the button while rolling, so that the player cannot
+        // cheat and reroll
+        button.gameObject.SetActive(false);
 
         var pos = new Vector3(
             (float)(m_random.NextDouble() - 0.5) * boardDiameter,

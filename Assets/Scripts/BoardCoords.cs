@@ -7,6 +7,11 @@ namespace Assets
     {
         public static String[] playerOrder = {"blue", "yellow", "red", "green"};
 
+        // Note: magic floating point numbers in this module are coordinates that
+        // were measured from the actual board texture.
+
+        // Return world coordinates of a piece in player's home base
+        // There are 4 players (0 - 3) and 4 piece numbers (0 - 3) in each house
         public static Vector3 getHomeCoords(int playerId, int pieceNumber)
         {
             float baseX, baseZ;
@@ -45,6 +50,8 @@ namespace Assets
             );
         }
 
+        // Return world coordinates of a piece in player's target base
+        // There are 4 players (0 - 3) and 4 piece numbers (0 - 3) in each target
         public static Vector3 getTargetCoords(int playerId, int pieceNumber)
         {
             const float min = 0.983f;
@@ -68,11 +75,18 @@ namespace Assets
             return new Vector3(0, 0, 0);
         }
 
+        // Return index of the tile on the board where a piece is spawned
+        // for the given player when it leaves home base.
+        // There are 40 tiles in total, and blue player spawns on tile 0.
+        // The last tile before reaching the target for each player is their
+        // starting position - 1 modulo 40.
         public static int getStartingPosition(int playerId)
         {
             return playerId * 10;
         }
 
+        // Return world coordinates on a tile. Position is between 0 - 39.
+        // The numbering starts at the blue player base and goes around clockwise.
         public static Vector3 getPositionCoords(int position)
         {
             const float max = 4.392f;
