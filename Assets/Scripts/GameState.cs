@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Assets;
 
@@ -8,11 +9,21 @@ public class GameState : MonoBehaviour
 {
     public int numPlayers = 4;
     public int piecesPerPlayer = 4;
+    public Sprite[] playerSprites;
+    public Sprite[] diceSprites;
 
-    public Material material;
+    private List<GameObject> m_pieces = new List<GameObject>();
+    private int m_lastDiceRoll = 0;
+    private GameObject m_diceValueImg;
 
-    private List<GameObject> pieces = new List<GameObject>();
     void Start()
+    {
+        InitializePieces();
+        m_diceValueImg = GameObject.Find("diceValue");
+        m_diceValueImg.SetActive(false);
+    }
+
+    private void InitializePieces()
     {
         for (int playerNr = 0; playerNr < numPlayers; playerNr++)
         {
@@ -24,14 +35,16 @@ public class GameState : MonoBehaviour
                 var pos = BoardCoords.getHomeCoords(playerNr, pieceNr);
                 var piece = Instantiate(prefab, pos, Quaternion.identity).gameObject;
                 piece.SetActive(true);
-                pieces.Add(piece);
+                m_pieces.Add(piece);
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnDiceRoll(int value)
     {
-        
+        m_lastDiceRoll = value;
+        m_diceValueImg.GetComponent<Image>().sprite = diceSprites[value - 1];
+        m_diceValueImg.SetActive(true);
     }
+
 }
