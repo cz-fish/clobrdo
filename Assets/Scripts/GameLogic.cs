@@ -13,7 +13,7 @@ namespace Assets {
         // positions on the board are 0 .. BoardSize
         // positions at home are -1, -2, -3, -4
         // positions in the target place are 1000 .. 1003 for first player, 2000 .. 2003 for second player, ...
-        private List<int> m_piecePositions;
+        protected List<int> m_piecePositions;
 
         public class NextPlayer {
             public int nextPlayer;

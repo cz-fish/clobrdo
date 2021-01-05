@@ -1,0 +1,15 @@
+{
+    "name": "Clobrdo",
+    "references": [
+        "GUID:e6dfc8a0671210747a1667195ebc5430"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

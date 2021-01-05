@@ -1,0 +1,12 @@
+﻿{
+    "name": "Tests",
+    "references": [
+        "Clobrdo"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}
