@@ -22,18 +22,19 @@ public class DiceRoll : MonoBehaviour
             // the dice has stopped
             var dice = GetComponent<Die_d6>();
 
-            if (dice.value > 0) {
+            //if (dice.value > 0) {
                 gameState.OnDiceRoll(dice.value);
-            }
+            //}
 
             m_hiding = true;
             // deactivate and hide the dice after 1 second
-            StartCoroutine("HideDice");
+            StartCoroutine(HideDice());
         }
     }
 
     IEnumerator HideDice() {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.4f);
+        Debug.Log("Hiding the dice");
         m_hiding = false;
         gameObject.SetActive(false);
     }

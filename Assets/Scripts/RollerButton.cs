@@ -18,10 +18,9 @@ public class RollerButton : MonoBehaviour
     {
         m_random = new System.Random();
         button.onClick.AddListener(RollDice);
-        dice.SetActive(false);
     }
 
-    void RollDice()
+    public void RollDice()
     {
         // Disable the button while rolling, so that the player cannot
         // cheat and reroll

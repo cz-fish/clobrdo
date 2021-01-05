@@ -75,6 +75,7 @@ namespace Assets
             return new Vector3(0, 0, 0);
         }
 
+/*
         // Return index of the tile on the board where a piece is spawned
         // for the given player when it leaves home base.
         // There are 40 tiles in total, and blue player spawns on tile 0.
@@ -82,8 +83,9 @@ namespace Assets
         // starting position - 1 modulo 40.
         public static int getStartingPosition(int playerId)
         {
-            return playerId * 10;
+            return playerId * GameLogic.PlayerPosOffset;
         }
+*/
 
         // Return world coordinates on a tile. Position is between 0 - 39.
         // The numbering starts at the blue player base and goes around clockwise.
