@@ -128,7 +128,7 @@ namespace Assets {
 
                 if (nextLogicalPos >= BoardSize) {
                     // piece will move to the target with this step
-                    AddTargetMoveIfAllowed(piece, piecePos, nextLogicalPos % BoardSize + playerNumber * 1000);
+                    AddTargetMoveIfAllowed(piece, piecePos, nextLogicalPos % BoardSize + (playerNumber + 1) * 1000);
                     continue;
                 }
 
