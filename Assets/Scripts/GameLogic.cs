@@ -90,7 +90,7 @@ namespace Assets {
             return playerNumber * PlayerPosOffset;
         }
 
-        private int? WhichPieceIsAtPos(int pos) {
+        protected int? WhichPieceIsAtPos(int pos) {
             for (var pieceNr = 0; pieceNr < NumPlayers * NumPiecesPerPlayer; pieceNr++) {
                 if (m_piecePositions[pieceNr] == pos) {
                     return pieceNr;
@@ -103,7 +103,7 @@ namespace Assets {
             return pieceNr / NumPiecesPerPlayer;
         }
 
-        private List<Move> GetPossibleMoves(int playerNumber, int diceRoll) {
+        protected List<Move> GetPossibleMoves(int playerNumber, int diceRoll) {
             var moves = new List<Move>();
             for (int piece = playerNumber * NumPiecesPerPlayer; piece < (playerNumber + 1) * NumPiecesPerPlayer; piece++) {
 
@@ -123,9 +123,11 @@ namespace Assets {
                     continue;
                 }
 
-                var logicalPos = (piecePos - PlayerStartingPos(playerNumber)) % BoardSize;
+                var logicalPos = (piecePos - PlayerStartingPos(playerNumber));
+                if (logicalPos < 0) {
+                    logicalPos += BoardSize;
+                }
                 var nextLogicalPos = logicalPos + diceRoll;
-
                 if (nextLogicalPos >= BoardSize) {
                     // piece will move to the target with this step
                     AddTargetMoveIfAllowed(piece, piecePos, nextLogicalPos % BoardSize + (playerNumber + 1) * 1000);
