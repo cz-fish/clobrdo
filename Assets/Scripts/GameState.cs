@@ -44,8 +44,19 @@ public class GameState : MonoBehaviour
             for (int pieceNr = 0; pieceNr < GameLogic.NumPiecesPerPlayer; pieceNr++)
             {
                 var pos = BoardCoords.getHomeCoords(playerNr, pieceNr);
+                // The piece needs to be in an empty parent object so that its animations are local
+                // to the parent's transformation. That way we can move the parent around and animation
+                // of the piece will happen in the position of the parent and not the center of the board.
+                var parent = new GameObject("pieceParent");
+                parent.transform.position = pos;
                 var piece = Instantiate(prefab, pos, Quaternion.identity).gameObject;
+                piece.transform.parent = parent.transform;
                 piece.SetActive(true);
+                // Add animator and animation controller
+                var animator = piece.AddComponent<Animator>();
+                animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Anim/pieceBase");
+                // To test that the animator works:
+                //animator.SetBool("Jump", true);
                 m_pieces.Add(piece);
             }
         }

@@ -16,12 +16,15 @@ public class RollerButton : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_random = new System.Random();
         button.onClick.AddListener(RollDice);
     }
 
     public void RollDice()
     {
+        if (m_random == null) {
+            m_random = new System.Random();
+        }
+
         // Disable the button while rolling, so that the player cannot
         // cheat and reroll
         button.gameObject.SetActive(false);
