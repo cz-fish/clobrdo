@@ -8,17 +8,30 @@ using Assets;
 
 public class GameState : MonoBehaviour
 {
+    // == Public types
+        public enum PlayerType {
+        Human,
+        Ai
+    }
+
+    // == Game options
+    // If true, each players starts with one piece already spawned
+    public bool startWithOnePieceUp = true;
+
+    public PlayerType[] players = {
+        PlayerType.Human,
+        PlayerType.Ai,
+        PlayerType.Ai,
+        PlayerType.Ai
+    };
+
+    // == Unity objects
+    // sprites drawn on the UI canvas
     public Sprite[] playerSprites;
     public Sprite[] diceSprites;
 
-    private List<GameObject> m_pieces = new List<GameObject>();
-    private GameObject m_diceValueImg;
-    private GameObject m_playerImg;
-    private GameObject m_rollButton;
-    private GameObject m_dice;
-    private GameLogic m_gameLogic = new GameLogic();
-    private AiPlayer m_aiPlayer = new AiPlayer();
-
+    // == Private types
+    // representation of a single move animation
     class MovingPiece {
         public GameObject piece {get;set;}
         public Vector3 start {get;set;}
@@ -26,16 +39,31 @@ public class GameState : MonoBehaviour
         public float phase {get;set;}
     }
 
+    // == Private references to Unity objects
+    // references to all game pieces, on the same order as GameLogic has them
+    private List<GameObject> m_pieces = new List<GameObject>();
+    private GameObject m_diceValueImg;
+    private GameObject m_playerImg;
+    private GameObject m_rollButton;
+    private GameObject m_dice;
+
+    // == Private members
+    // implementation of the game rules and logic
+    private GameLogic m_gameLogic = new GameLogic();
+    private AiPlayer m_aiPlayer = new AiPlayer();
+
+    // currently moving piece, or null if no piece is currently moving
     private MovingPiece m_move = null;
+    // length of the move (jumping) animation
+    private float m_jumpLength = 0.5f;
 
-    private float m_jumpLength = 0f;
-
-    public bool startWithOnePieceUp = true;
-
+    // Game start
     void Start()
     {
         m_gameLogic.Start(startWithOnePieceUp);
         InitializePieces();
+
+        // find references to Unity objects
         m_diceValueImg = GameObject.Find("diceValue");
         m_diceValueImg.SetActive(false);
         m_playerImg = GameObject.Find("nextPlayerIcon");
@@ -43,14 +71,12 @@ public class GameState : MonoBehaviour
         m_dice = GameObject.Find("dice");
         m_dice.SetActive(false);
 
-        // get animation lengths
-        m_jumpLength = 0.5f;
-
         // This starts the first player as an AI player
         // FIXME: the first player should be human
         StartCoroutine(NextPlayer());
     }
 
+    // Piece move animation
     void Update()
     {
         if (m_move != null) {
