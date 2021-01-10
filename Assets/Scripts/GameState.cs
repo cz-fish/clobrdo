@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,20 @@ public class GameState : MonoBehaviour
     private GameLogic m_gameLogic = new GameLogic();
     private AiPlayer m_aiPlayer = new AiPlayer();
 
+    class MovingPiece {
+        public GameObject piece {get;set;}
+        public Vector3 start {get;set;}
+        public Vector3 target {get;set;}
+        public float phase {get;set;}
+        public GameObject bumpedPiece {get;set;}
+        public Vector3? bumpedPieceTarget {get;set;}
+    }
+
+    private MovingPiece m_move = null;
+
+    private float m_jumpLength = 0f;
+    private float m_rollLength = 0f;
+
     void Start()
     {
         m_gameLogic.Start();
@@ -29,9 +44,41 @@ public class GameState : MonoBehaviour
         m_dice = GameObject.Find("dice");
         m_dice.SetActive(false);
 
+        // get animation lengths
+        var pieceBase = GameObject.Find("pieceBase");
+        var clips = pieceBase.GetComponent<Animator>().runtimeAnimatorController.animationClips;
+        pieceBase.SetActive(false);
+        foreach (var clip in clips) {
+            if (clip.name == "PieceJump") {
+                m_jumpLength = clip.length;
+            } else if (clip.name == "PieceRoll") {
+                m_rollLength = clip.length;
+            }
+        }
+        Debug.Log($"Jumping length {m_jumpLength}, rolling length {m_rollLength}");
+
         // This starts the first player as an AI player
         // FIXME: the first player should be human
         StartCoroutine(NextPlayer());
+    }
+
+    void Update()
+    {
+        if (m_move != null) {
+            m_move.phase += Time.deltaTime;
+            float jumpPercent = m_move.phase / m_jumpLength;
+            Vector3 pos = m_move.target;
+            if (jumpPercent < 1.0f) {
+                pos = m_move.start + (m_move.target - m_move.start) * jumpPercent;
+                pos.y = (float)Math.Sin(Math.PI * jumpPercent);
+                m_move.piece.transform.parent.position = pos;
+            } else {
+                // jumping is done
+                m_move.piece.transform.parent.position = m_move.target;
+                m_move = null;
+            }
+            // TODO: bumping and rolling
+        }
     }
 
     private void InitializePieces()
@@ -60,6 +107,12 @@ public class GameState : MonoBehaviour
                 m_pieces.Add(piece);
             }
         }
+
+        // FIXME: for testing only
+        m_pieces[0].transform.parent.position = BoardCoords.getPositionCoords(1);
+        m_pieces[4].transform.parent.position = BoardCoords.getPositionCoords(11);
+        m_pieces[8].transform.parent.position = BoardCoords.getPositionCoords(21);
+        m_pieces[12].transform.parent.position = BoardCoords.getPositionCoords(31);
     }
 
     public void OnDiceRoll(int value)
@@ -108,25 +161,64 @@ public class GameState : MonoBehaviour
         var move = m_aiPlayer.ChooseMove(possibleMoves);
 
         Debug.Log($"Executing AI move: piece {move.pieceNr} to pos  {move.toPos}");
+        yield return PieceMove(move);
+    }
 
-        // TODO: animate the move
+    IEnumerator PieceMove(GameLogic.Move move) {
         var piece = m_pieces[move.pieceNr];
+        //piece.GetComponent<Animator>().SetBool("Jump", true);
         Vector3 newCoords;
         if (move.toPos < GameLogic.BoardSize) {
             newCoords = BoardCoords.getPositionCoords(move.toPos);
         } else {
             newCoords = BoardCoords.getTargetCoords(m_gameLogic.CurrentPlayer, move.toPos % 1000);
         }
-        piece.transform.position = newCoords;
 
+        GameObject bumpedPiece = null;
+        Vector3? bumpTargetPos = null;
         if (move.pieceOnTargetPos.HasValue) {
-            var bumpedPiece = move.pieceOnTargetPos.Value;
-            var bumpedOwner = m_gameLogic.WhosePlayerIsPiece(bumpedPiece);
+            var bumpedPieceIdx = move.pieceOnTargetPos.Value;
+            var bumpedOwner = m_gameLogic.WhosePlayerIsPiece(bumpedPieceIdx);
             var bumpHomePos = (-m_gameLogic.FindFreeHomePos(bumpedOwner)) - 1;
-            m_pieces[bumpedPiece].transform.position = BoardCoords.getHomeCoords(bumpedOwner, bumpHomePos);
+            bumpedPiece = m_pieces[bumpedPieceIdx];
+            bumpTargetPos = BoardCoords.getHomeCoords(bumpedOwner, bumpHomePos);
+            /*
+            bumpedPiece.GetComponent<Animator>().SetBool("Roll", true);
+            m_rolling = new MovingPiece {
+                piece = bumpedPiece,
+                target = BoardCoords.getHomeCoords(bumpedOwner, bumpHomePos),
+                phase = 0f
+            };
+            */
+        }
+
+        m_move = new MovingPiece() {
+            piece = piece,
+            start = piece.transform.parent.position,
+            target = newCoords,
+            phase = 0f,
+            bumpedPiece = bumpedPiece,
+            bumpedPieceTarget = bumpTargetPos
+        };
+        //piece.transform.position = newCoords;
+
+        yield return new WaitForSeconds(m_jumpLength);
+
+        //piece.GetComponent<Animator>().SetBool("Jump", false);
+
+/*
+        // stop the animations
+        if (bumpedPiece != null) {
+            bumpedPiece.GetComponent<Animator>().SetBool("Roll", false);
+        }
+        */
+
+        if (bumpedPiece != null) {
+            bumpedPiece.transform.parent.position = bumpTargetPos.Value;
         }
 
         var result = m_gameLogic.ExecuteMove(move);
+
         if (result.gameOver != null) {
             Debug.Log("Game over");
             // TODO: game over

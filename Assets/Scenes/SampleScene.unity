@@ -1265,6 +1265,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: pieceBase
       objectReference: {fileID: 0}
+    - target: {fileID: 3896348591064117178, guid: 371faf7c85677264ea0e178d27fc20f6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4420648942959080704, guid: 371faf7c85677264ea0e178d27fc20f6,
         type: 3}
       propertyPath: m_RootOrder
@@ -1345,8 +1350,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6265fd9039856304bafca80d0088d0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jump: 0
-  roll: 0
 --- !u!95 &1977079126
 Animator:
   serializedVersion: 3

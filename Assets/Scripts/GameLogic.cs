@@ -63,6 +63,12 @@ namespace Assets {
                     m_piecePositions.Add(-piece);
                 }
             }
+
+            // FIXME: for testing only
+            m_piecePositions[0] = 1;
+            m_piecePositions[4] = 11;
+            m_piecePositions[8] = 21;
+            m_piecePositions[12] = 31;
         }
 
         public DiceResult OnDiceRoll(int value) {
