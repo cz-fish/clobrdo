@@ -33,9 +33,11 @@ public class GameState : MonoBehaviour
     private float m_jumpLength = 0f;
     private float m_rollLength = 0f;
 
+    public bool startWithOnePieceUp = true;
+
     void Start()
     {
-        m_gameLogic.Start();
+        m_gameLogic.Start(startWithOnePieceUp);
         InitializePieces();
         m_diceValueImg = GameObject.Find("diceValue");
         m_diceValueImg.SetActive(false);
@@ -90,7 +92,7 @@ public class GameState : MonoBehaviour
             var prefab = Resources.Load(prefabName) as GameObject;
             for (int pieceNr = 0; pieceNr < GameLogic.NumPiecesPerPlayer; pieceNr++)
             {
-                var pos = BoardCoords.getHomeCoords(playerNr, pieceNr);
+                var pos = GetPieceCoords(playerNr, pieceNr);
                 // The piece needs to be in an empty parent object so that its animations are local
                 // to the parent's transformation. That way we can move the parent around and animation
                 // of the piece will happen in the position of the parent and not the center of the board.
@@ -108,11 +110,16 @@ public class GameState : MonoBehaviour
             }
         }
 
-        // FIXME: for testing only
-        m_pieces[0].transform.parent.position = BoardCoords.getPositionCoords(1);
-        m_pieces[4].transform.parent.position = BoardCoords.getPositionCoords(11);
-        m_pieces[8].transform.parent.position = BoardCoords.getPositionCoords(21);
-        m_pieces[12].transform.parent.position = BoardCoords.getPositionCoords(31);
+        return;
+
+        Vector3 GetPieceCoords(int playerNr, int pieceNr) {
+            var piecePos = m_gameLogic.GetPiecePos(playerNr * GameLogic.NumPiecesPerPlayer + pieceNr);
+            if (piecePos < 0) {
+                return BoardCoords.getHomeCoords(playerNr, pieceNr);
+            } else {
+                return BoardCoords.getPositionCoords(piecePos);
+            }
+        }
     }
 
     public void OnDiceRoll(int value)

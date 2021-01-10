@@ -54,21 +54,21 @@ namespace Assets {
             get; protected set;
         }
 
-        public void Start() {
+        // If startWithOnePieceUp, all players will start with one piece already spawned,
+        // so they don't need to wait to roll 6 first
+        public void Start(bool startWithOnePieceUp = false) {
             CurrentPlayer = 0;
             // place are pieces to homes
             m_piecePositions = new List<int>();
             for (var player = 0; player < NumPlayers; player++) {
                 for (var piece = 1; piece <= NumPiecesPerPlayer; piece++) {
-                    m_piecePositions.Add(-piece);
+                    if (startWithOnePieceUp && piece == 1) {
+                        m_piecePositions.Add(PlayerStartingPos(player));
+                    } else {
+                        m_piecePositions.Add(-piece);
+                    }
                 }
             }
-
-            // FIXME: for testing only
-            m_piecePositions[0] = 1;
-            m_piecePositions[4] = 11;
-            m_piecePositions[8] = 21;
-            m_piecePositions[12] = 31;
         }
 
         public DiceResult OnDiceRoll(int value) {
@@ -90,6 +90,10 @@ namespace Assets {
                 result.aiTurn = new PossibleMoves {Moves = moves};
                 return result;
             }
+        }
+
+        public int GetPiecePos(int pieceIndex) {
+            return m_piecePositions[pieceIndex];
         }
 
         public int PlayerStartingPos(int playerNumber) {
