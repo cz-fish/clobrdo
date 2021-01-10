@@ -24,14 +24,11 @@ public class GameState : MonoBehaviour
         public Vector3 start {get;set;}
         public Vector3 target {get;set;}
         public float phase {get;set;}
-        public GameObject bumpedPiece {get;set;}
-        public Vector3? bumpedPieceTarget {get;set;}
     }
 
     private MovingPiece m_move = null;
 
     private float m_jumpLength = 0f;
-    private float m_rollLength = 0f;
 
     public bool startWithOnePieceUp = true;
 
@@ -47,17 +44,7 @@ public class GameState : MonoBehaviour
         m_dice.SetActive(false);
 
         // get animation lengths
-        var pieceBase = GameObject.Find("pieceBase");
-        var clips = pieceBase.GetComponent<Animator>().runtimeAnimatorController.animationClips;
-        pieceBase.SetActive(false);
-        foreach (var clip in clips) {
-            if (clip.name == "PieceJump") {
-                m_jumpLength = clip.length;
-            } else if (clip.name == "PieceRoll") {
-                m_rollLength = clip.length;
-            }
-        }
-        Debug.Log($"Jumping length {m_jumpLength}, rolling length {m_rollLength}");
+        m_jumpLength = 0.5f;
 
         // This starts the first player as an AI player
         // FIXME: the first player should be human
@@ -79,7 +66,6 @@ public class GameState : MonoBehaviour
                 m_move.piece.transform.parent.position = m_move.target;
                 m_move = null;
             }
-            // TODO: bumping and rolling
         }
     }
 
@@ -101,11 +87,6 @@ public class GameState : MonoBehaviour
                 var piece = Instantiate(prefab, pos, Quaternion.identity).gameObject;
                 piece.transform.parent = parent.transform;
                 piece.SetActive(true);
-                // Add animator and animation controller
-                var animator = piece.AddComponent<Animator>();
-                animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Anim/pieceBase");
-                // To test that the animator works:
-                //animator.SetBool("Jump", true);
                 m_pieces.Add(piece);
             }
         }
@@ -173,7 +154,6 @@ public class GameState : MonoBehaviour
 
     IEnumerator PieceMove(GameLogic.Move move) {
         var piece = m_pieces[move.pieceNr];
-        //piece.GetComponent<Animator>().SetBool("Jump", true);
         Vector3 newCoords;
         if (move.toPos < GameLogic.BoardSize) {
             newCoords = BoardCoords.getPositionCoords(move.toPos);
@@ -189,36 +169,16 @@ public class GameState : MonoBehaviour
             var bumpHomePos = (-m_gameLogic.FindFreeHomePos(bumpedOwner)) - 1;
             bumpedPiece = m_pieces[bumpedPieceIdx];
             bumpTargetPos = BoardCoords.getHomeCoords(bumpedOwner, bumpHomePos);
-            /*
-            bumpedPiece.GetComponent<Animator>().SetBool("Roll", true);
-            m_rolling = new MovingPiece {
-                piece = bumpedPiece,
-                target = BoardCoords.getHomeCoords(bumpedOwner, bumpHomePos),
-                phase = 0f
-            };
-            */
         }
 
         m_move = new MovingPiece() {
             piece = piece,
             start = piece.transform.parent.position,
             target = newCoords,
-            phase = 0f,
-            bumpedPiece = bumpedPiece,
-            bumpedPieceTarget = bumpTargetPos
+            phase = 0f
         };
-        //piece.transform.position = newCoords;
 
         yield return new WaitForSeconds(m_jumpLength);
-
-        //piece.GetComponent<Animator>().SetBool("Jump", false);
-
-/*
-        // stop the animations
-        if (bumpedPiece != null) {
-            bumpedPiece.GetComponent<Animator>().SetBool("Roll", false);
-        }
-        */
 
         if (bumpedPiece != null) {
             bumpedPiece.transform.parent.position = bumpTargetPos.Value;
