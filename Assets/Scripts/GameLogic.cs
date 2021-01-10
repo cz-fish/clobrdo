@@ -24,6 +24,9 @@ namespace Assets {
             public int fromPos;
             public int toPos;
             public int? pieceOnTargetPos;
+            // fromPos, but adjusted by player's starting position, so that
+            // higher logicalBoardPos always means closer to target
+            public int logicalBoardPos;
         }
 
         public class PossibleMoves {
@@ -122,7 +125,7 @@ namespace Assets {
                 if (piecePos < 0) {
                     // piece is in home, need to roll 6 to spawn it
                     if (diceRoll == 6) {
-                        AddBoardMoveIfAllowed(piece, piecePos, PlayerStartingPos(playerNumber));
+                        AddBoardMoveIfAllowed(piece, piecePos, PlayerStartingPos(playerNumber), piecePos);
                     }
                     continue;
                 }
@@ -145,12 +148,12 @@ namespace Assets {
                 }
 
                 // else piece is on the board and will stay on the board
-                AddBoardMoveIfAllowed(piece, piecePos, (piecePos + diceRoll) % BoardSize);
+                AddBoardMoveIfAllowed(piece, piecePos, (piecePos + diceRoll) % BoardSize, logicalPos);
 
             }
             return moves;
 
-            void AddBoardMoveIfAllowed(int piece, int piecePos, int newPos) {
+            void AddBoardMoveIfAllowed(int piece, int piecePos, int newPos, int logicalPos) {
                 int? occupier = WhichPieceIsAtPos(newPos);
                 // we can only move piece from piecePos to newPos if the newPos is empty,
                 // or occuppied by an other player's piece but not our own piece
@@ -159,7 +162,8 @@ namespace Assets {
                         pieceNr = piece,
                         fromPos = piecePos,
                         toPos = newPos,
-                        pieceOnTargetPos = occupier
+                        pieceOnTargetPos = occupier,
+                        logicalBoardPos = logicalPos
                     });
                 }
             }
@@ -173,7 +177,8 @@ namespace Assets {
                         pieceNr = piece,
                         fromPos = piecePos,
                         toPos = newPos,
-                        pieceOnTargetPos = null
+                        pieceOnTargetPos = null,
+                        logicalBoardPos = 0    // not that important to the AI
                     });
                 }
             }
