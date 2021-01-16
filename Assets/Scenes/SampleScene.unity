@@ -202,7 +202,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 395567410}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1991553378}
+        m_MethodName: RollDice
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &395567410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1026,6 +1037,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1522666515}
   m_CullTransparentMesh: 0
+--- !u!1 &1539605054
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1539605056}
+  - component: {fileID: 1539605055}
+  m_Layer: 0
+  m_Name: MouseManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1539605055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539605054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917d1de5b4544d04a856112a8727a427, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverObject: {fileID: 0}
+--- !u!4 &1539605056
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539605054}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1681997373
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,6 +1204,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c17528e59a42c4d4e958cf591d3e9b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startWithOnePieceUp: 1
+  players: 00000000010000000100000001000000
   playerSprites:
   - {fileID: -7067176810482676727, guid: 1590c09d90829ca48b5c35fd45e7bed0, type: 3}
   - {fileID: -7725044929260168603, guid: 1590c09d90829ca48b5c35fd45e7bed0, type: 3}
@@ -1161,7 +1218,6 @@ MonoBehaviour:
   - {fileID: -3980829537674891928, guid: c2eff8cf9a3c9b042aeaa76dae4299bf, type: 3}
   - {fileID: -4311980954447484322, guid: c2eff8cf9a3c9b042aeaa76dae4299bf, type: 3}
   - {fileID: -6631067346718800295, guid: c2eff8cf9a3c9b042aeaa76dae4299bf, type: 3}
-  startWithOnePieceUp: 1
 --- !u!4 &1943099201
 Transform:
   m_ObjectHideFlags: 0
@@ -1202,7 +1258,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1945672732}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -80.5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 395567408}
@@ -1261,6 +1317,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -1475762718081953789, guid: 371faf7c85677264ea0e178d27fc20f6,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: -1475762718081953789, guid: 371faf7c85677264ea0e178d27fc20f6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3193317310958951930, guid: 371faf7c85677264ea0e178d27fc20f6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3896348591064117178, guid: 371faf7c85677264ea0e178d27fc20f6,
         type: 3}
       propertyPath: m_Name
@@ -1330,6 +1401,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7890158357052061585, guid: 371faf7c85677264ea0e178d27fc20f6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 371faf7c85677264ea0e178d27fc20f6, type: 3}
