@@ -19,7 +19,7 @@ public class GameState : MonoBehaviour
     public bool startWithOnePieceUp = true;
 
     public PlayerType[] players = {
-        PlayerType.Human,
+        PlayerType.Ai,
         PlayerType.Ai,
         PlayerType.Ai,
         PlayerType.Ai
@@ -67,12 +67,12 @@ public class GameState : MonoBehaviour
         m_diceValueImg = GameObject.Find("diceValue");
         m_diceValueImg.SetActive(false);
         m_playerImg = GameObject.Find("nextPlayerIcon");
+
         m_rollButton = GameObject.Find("rollButton");
+
         m_dice = GameObject.Find("dice");
         m_dice.SetActive(false);
 
-        // This starts the first player as an AI player
-        // FIXME: the first player should be human
         StartCoroutine(NextPlayer());
     }
 
@@ -141,17 +141,26 @@ public class GameState : MonoBehaviour
 
         m_diceValueImg.GetComponent<Image>().sprite = diceSprites[value - 1];
         m_diceValueImg.SetActive(true);
-        var diceResult = m_gameLogic.OnDiceRoll(value);
-        if (diceResult.nextPlayer != null) {
+        var possibleMoves = m_gameLogic.OnDiceRoll(value);
+        if (possibleMoves.Count == 0) {
             Debug.Log("No possible moves, moving to next player");
             StartCoroutine(NextPlayer());
-        } else if (diceResult.humanTurn != null) {
-            Debug.Log($"Human turn, {diceResult.humanTurn.Moves.Count} moves");
-            // TODO
-        } else if (diceResult.aiTurn != null) {
-            Debug.Log($"AI turn, {diceResult.aiTurn.Moves.Count} moves");
-            StartCoroutine(AiPlayerMove(diceResult.aiTurn));
+        } else {
+            var playerType = players[m_gameLogic.CurrentPlayer];
+            if (playerType == PlayerType.Human) {
+                Debug.Log($"Human turn, {possibleMoves.Count} moves");
+                //HighlightPossibleMoves(possibleMoves);
+                // TODO enable user input
+            } else if (playerType == PlayerType.Ai) {
+                Debug.Log($"AI turn, {possibleMoves.Count} moves");
+                StartCoroutine(AiPlayerMove(possibleMoves));
+            }
         }
+    }
+
+    bool IsHumanPlayer() {
+        var playerType = players[m_gameLogic.CurrentPlayer];
+        return playerType == PlayerType.Human;
     }
 
     IEnumerator NextPlayer() {
@@ -160,7 +169,7 @@ public class GameState : MonoBehaviour
         yield return new WaitForSeconds(0.6f);
         m_diceValueImg.SetActive(false);
         m_playerImg.GetComponent<Image>().sprite = playerSprites[m_gameLogic.CurrentPlayer];
-        if (m_gameLogic.IsHumanPlayer(m_gameLogic.CurrentPlayer)) {
+        if (IsHumanPlayer()) {
             Debug.Log("Next player is human, showing diceroll button");
             m_rollButton.SetActive(true);
         } else {
@@ -170,7 +179,7 @@ public class GameState : MonoBehaviour
         }
     }
 
-    IEnumerator AiPlayerMove(GameLogic.PossibleMoves possibleMoves) {
+    IEnumerator AiPlayerMove(List<GameLogic.Move> possibleMoves) {
         yield return new WaitForSeconds(0.2f);
         var move = m_aiPlayer.ChooseMove(possibleMoves);
 

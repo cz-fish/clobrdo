@@ -29,18 +29,6 @@ namespace Assets {
             public int logicalBoardPos;
         }
 
-        public class PossibleMoves {
-            public List<Move> Moves;
-        }
-
-        // poor man's variant type. OnDiceRoll will return an instance
-        // that will have exactly one of the the members non-null.
-        public class DiceResult {
-            public NextPlayer nextPlayer = null;
-            public PossibleMoves humanTurn = null;
-            public PossibleMoves aiTurn = null;
-        }
-
         public class GameOver {
             public int winningPlayer;
         }
@@ -74,25 +62,14 @@ namespace Assets {
             }
         }
 
-        public DiceResult OnDiceRoll(int value) {
+        public List<Move> OnDiceRoll(int value) {
             LastDiceRoll = value;
-            var result = new DiceResult();
-
             var moves = GetPossibleMoves(CurrentPlayer, value);
             if (moves.Count == 0) {
                 // No possible moves, on to the next player
                 CurrentPlayer = (CurrentPlayer + 1) % NumPlayers;
-                result.nextPlayer = new NextPlayer {nextPlayer = CurrentPlayer};
-                return result;
             }
-
-            if (IsHumanPlayer(CurrentPlayer)) {
-                result.humanTurn = new PossibleMoves {Moves = moves};
-                return result;
-            } else {
-                result.aiTurn = new PossibleMoves {Moves = moves};
-                return result;
-            }
+            return moves;
         }
 
         public int GetPiecePos(int pieceIndex) {
@@ -182,12 +159,6 @@ namespace Assets {
                     });
                 }
             }
-        }
-
-        public bool IsHumanPlayer(int playerNumber) {
-            // FIXME
-            return false;
-            //return playerNumber == 0;
         }
 
         public MoveResult ExecuteMove(Move move) {

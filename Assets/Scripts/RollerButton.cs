@@ -13,14 +13,11 @@ public class RollerButton : MonoBehaviour
     public float forceMax = 2000f;
 
     private System.Random m_random;
-    // Start is called before the first frame update
-    void Start()
-    {
-        button.onClick.AddListener(RollDice);
-    }
 
     public void RollDice()
     {
+        Debug.Log("RollDice");
+
         if (m_random == null) {
             m_random = new System.Random();
         }
