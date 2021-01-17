@@ -46,6 +46,7 @@ public class GameState : MonoBehaviour
     private GameObject m_playerImg;
     private GameObject m_rollButton;
     private GameObject m_dice;
+    private MouseSelection m_mouseSelection;
 
     // == Private members
     // implementation of the game rules and logic
@@ -54,6 +55,8 @@ public class GameState : MonoBehaviour
 
     // currently moving piece, or null if no piece is currently moving
     private MovingPiece m_move = null;
+    // list of all moves that the current human player can choose from
+    private List<GameLogic.Move> m_pendingMoves = null;
     // length of the move (jumping) animation
     private float m_jumpLength = 0.5f;
 
@@ -72,6 +75,8 @@ public class GameState : MonoBehaviour
 
         m_dice = GameObject.Find("dice");
         m_dice.SetActive(false);
+
+        m_mouseSelection = GameObject.Find("MouseManager").GetComponent<MouseSelection>();
 
         StartCoroutine(NextPlayer());
     }
@@ -97,6 +102,8 @@ public class GameState : MonoBehaviour
 
     private void InitializePieces()
     {
+        int pieceLayer = LayerMask.NameToLayer("Pieces");
+
         for (int playerNr = 0; playerNr < GameLogic.NumPlayers; playerNr++)
         {
             var playerColor = BoardCoords.playerOrder[playerNr];
@@ -110,9 +117,23 @@ public class GameState : MonoBehaviour
                 // of the piece will happen in the position of the parent and not the center of the board.
                 var parent = new GameObject("pieceParent");
                 parent.transform.position = pos;
+
                 var piece = Instantiate(prefab, pos, Quaternion.identity).gameObject;
                 piece.transform.parent = parent.transform;
                 piece.SetActive(true);
+
+                // Add animator and animation controller
+                var animator = piece.AddComponent<Animator>();
+                animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Anim/pieceBase");
+                // To test that the animator works:
+                //animator.SetBool("Jump", true);
+
+                // Put all pieces on a layer, for raycasting.
+                piece.layer = pieceLayer;
+                foreach(Transform child in piece.transform) {
+                    child.gameObject.layer = pieceLayer;
+                }
+
                 m_pieces.Add(piece);
             }
         }
@@ -149,13 +170,36 @@ public class GameState : MonoBehaviour
             var playerType = players[m_gameLogic.CurrentPlayer];
             if (playerType == PlayerType.Human) {
                 Debug.Log($"Human turn, {possibleMoves.Count} moves");
-                //HighlightPossibleMoves(possibleMoves);
-                // TODO enable user input
+                HighlightPossibleMoves(possibleMoves);
+                EnablePlayerInput();
             } else if (playerType == PlayerType.Ai) {
                 Debug.Log($"AI turn, {possibleMoves.Count} moves");
                 StartCoroutine(AiPlayerMove(possibleMoves));
             }
         }
+    }
+
+    void HighlightPossibleMoves(List<GameLogic.Move> moves) {
+        m_pendingMoves = moves;
+        foreach (var move in moves) {
+            var piece = m_pieces[move.pieceNr];
+            var animator = piece.GetComponent<Animator>();
+            animator.SetBool("Jump", true);
+            //animator.GetCurrentAnimatorStateInfo(0).normalizedTime = 0;
+        }
+    }
+
+    void EnablePlayerInput() {
+        m_mouseSelection.EnablePieceSelection(this);
+    }
+
+    void DisablePlayerInput() {
+        m_mouseSelection.DisablePieceSelection();
+        foreach (var move in m_pendingMoves) {
+            var piece = m_pieces[move.pieceNr];
+            piece.GetComponent<Animator>().SetBool("Jump", false);
+        }
+        m_pendingMoves = null;
     }
 
     bool IsHumanPlayer() {
@@ -229,4 +273,40 @@ public class GameState : MonoBehaviour
         }
     }
 
+    public void OnPieceSelected(GameObject pieceParent) {
+        // The mouse raycast returns the piece parent object
+        // We want to find the actual piece
+        GameObject piece = null;
+        if (pieceParent.transform.childCount == 1) {
+            piece = pieceParent.transform.GetChild(0).gameObject;
+        } else {
+            piece = pieceParent;
+        }
+        // find out the index of the selected piece
+        int selectedPieceIdx = -1;
+        for (var i = 0; i < m_pieces.Count; i++) {
+            if (piece == m_pieces[i]) {
+                selectedPieceIdx = i;
+                break;
+            }
+        }
+        if (selectedPieceIdx == -1) {
+            return;
+        }
+
+        // check that the piece is playable
+        GameLogic.Move selectedMove = null;
+        foreach(var move in m_pendingMoves) {
+            if (move.pieceNr == selectedPieceIdx) {
+                selectedMove = move;
+                break;
+            }
+        }
+        if (selectedMove == null) {
+            return;
+        }
+
+        DisablePlayerInput();
+        StartCoroutine(PieceMove(selectedMove));
+    }
 }
