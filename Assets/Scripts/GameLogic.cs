@@ -15,6 +15,9 @@ namespace Assets {
         // positions in the target place are 1000 .. 1003 for first player, 2000 .. 2003 for second player, ...
         protected List<int> m_piecePositions;
 
+        // If true, player who rolled 6 plays again
+        protected bool m_rollAgainOnSix;
+
         public class NextPlayer {
             public int nextPlayer;
         }
@@ -27,6 +30,7 @@ namespace Assets {
             // fromPos, but adjusted by player's starting position, so that
             // higher logicalBoardPos always means closer to target
             public int logicalBoardPos;
+            public int rollValue;
         }
 
         public class GameOver {
@@ -47,7 +51,8 @@ namespace Assets {
 
         // If startWithOnePieceUp, all players will start with one piece already spawned,
         // so they don't need to wait to roll 6 first
-        public void Start(bool startWithOnePieceUp = false) {
+        public void Start(bool startWithOnePieceUp = false, bool rollAgainOnSix = false) {
+            m_rollAgainOnSix = rollAgainOnSix;
             CurrentPlayer = 0;
             // place are pieces to homes
             m_piecePositions = new List<int>();
@@ -102,14 +107,14 @@ namespace Assets {
                 if (piecePos < 0) {
                     // piece is in home, need to roll 6 to spawn it
                     if (diceRoll == 6) {
-                        AddBoardMoveIfAllowed(piece, piecePos, PlayerStartingPos(playerNumber), piecePos);
+                        AddBoardMoveIfAllowed(piece, piecePos, PlayerStartingPos(playerNumber), piecePos, diceRoll);
                     }
                     continue;
                 }
 
                 if (piecePos >= 1000) {
                     // piece already in target
-                    AddTargetMoveIfAllowed(piece, piecePos, piecePos + diceRoll);
+                    AddTargetMoveIfAllowed(piece, piecePos, piecePos + diceRoll, diceRoll);
                     continue;
                 }
 
@@ -120,17 +125,17 @@ namespace Assets {
                 var nextLogicalPos = logicalPos + diceRoll;
                 if (nextLogicalPos >= BoardSize) {
                     // piece will move to the target with this step
-                    AddTargetMoveIfAllowed(piece, piecePos, nextLogicalPos % BoardSize + (playerNumber + 1) * 1000);
+                    AddTargetMoveIfAllowed(piece, piecePos, nextLogicalPos % BoardSize + (playerNumber + 1) * 1000, diceRoll);
                     continue;
                 }
 
                 // else piece is on the board and will stay on the board
-                AddBoardMoveIfAllowed(piece, piecePos, (piecePos + diceRoll) % BoardSize, logicalPos);
+                AddBoardMoveIfAllowed(piece, piecePos, (piecePos + diceRoll) % BoardSize, logicalPos, diceRoll);
 
             }
             return moves;
 
-            void AddBoardMoveIfAllowed(int piece, int piecePos, int newPos, int logicalPos) {
+            void AddBoardMoveIfAllowed(int piece, int piecePos, int newPos, int logicalPos, int diceValue) {
                 int? occupier = WhichPieceIsAtPos(newPos);
                 // we can only move piece from piecePos to newPos if the newPos is empty,
                 // or occuppied by an other player's piece but not our own piece
@@ -140,12 +145,13 @@ namespace Assets {
                         fromPos = piecePos,
                         toPos = newPos,
                         pieceOnTargetPos = occupier,
-                        logicalBoardPos = logicalPos
+                        logicalBoardPos = logicalPos,
+                        rollValue = diceValue
                     });
                 }
             }
 
-            void AddTargetMoveIfAllowed(int piece, int piecePos, int newPos) {
+            void AddTargetMoveIfAllowed(int piece, int piecePos, int newPos, int diceValue) {
                 // we can only move within the target if the newPos is within the target's capacity,
                 // and if the newPos is not occuppied yet
                 if (newPos % 1000 < NumPiecesPerPlayer && !WhichPieceIsAtPos(newPos).HasValue) {
@@ -155,7 +161,8 @@ namespace Assets {
                         fromPos = piecePos,
                         toPos = newPos,
                         pieceOnTargetPos = null,
-                        logicalBoardPos = 0    // not that important to the AI
+                        logicalBoardPos = 0,    // not that important to the AI
+                        rollValue = diceValue
                     });
                 }
             }
@@ -176,7 +183,10 @@ namespace Assets {
             if (piecesInTarget == NumPiecesPerPlayer) {
                 result.gameOver = new GameOver {winningPlayer = CurrentPlayer};
             } else {
-                CurrentPlayer = (CurrentPlayer + 1) % NumPlayers;
+                UnityEngine.Debug.Log($"roll value {move.rollValue}, roll again on six {m_rollAgainOnSix}");
+                if (move.rollValue != 6 || !m_rollAgainOnSix) {
+                    CurrentPlayer = (CurrentPlayer + 1) % NumPlayers;
+                }
                 result.nextPlayer = new NextPlayer {nextPlayer = CurrentPlayer};
             }
             return result;

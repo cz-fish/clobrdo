@@ -17,6 +17,8 @@ public class GameState : MonoBehaviour
     // == Game options
     // If true, each players starts with one piece already spawned
     public bool startWithOnePieceUp = true;
+    // If true, player who rolled six keeps playing
+    public bool rollAgainOnSix = true;
     // If true, player has to press the Roll button to roll the dice,
     // otherwise it just rolls automatically.
     public bool manualDiceRoll = false;
@@ -66,7 +68,7 @@ public class GameState : MonoBehaviour
     // Game start
     void Start()
     {
-        m_gameLogic.Start(startWithOnePieceUp);
+        m_gameLogic.Start(startWithOnePieceUp, rollAgainOnSix);
         InitializePieces();
 
         // find references to Unity objects
