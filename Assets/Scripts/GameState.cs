@@ -17,6 +17,9 @@ public class GameState : MonoBehaviour
     // == Game options
     // If true, each players starts with one piece already spawned
     public bool startWithOnePieceUp = true;
+    // If true, player has to press the Roll button to roll the dice,
+    // otherwise it just rolls automatically.
+    public bool manualDiceRoll = false;
 
     public PlayerType[] players = {
         PlayerType.Ai,
@@ -214,11 +217,11 @@ public class GameState : MonoBehaviour
         yield return new WaitForSeconds(0.6f);
         m_diceValueImg.SetActive(false);
         m_playerImg.GetComponent<Image>().sprite = playerSprites[m_gameLogic.CurrentPlayer];
-        if (IsHumanPlayer()) {
-            Debug.Log("Next player is human, showing diceroll button");
+        if (IsHumanPlayer() && manualDiceRoll) {
+            // Show the Roll button for the player to roll at their convenience
             m_rollButton.SetActive(true);
         } else {
-            Debug.Log("Next player is AI, rolling the dice");
+            // Auto roll dice
             var roller = m_dice.GetComponent<RollerButton>();
             roller.RollDice();
         }
