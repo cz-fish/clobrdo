@@ -41,7 +41,6 @@ public class DiceRoll : MonoBehaviour
 
     IEnumerator HideDice() {
         yield return new WaitForSeconds(0.4f);
-        Debug.Log("Hiding the dice");
         m_hiding = false;
         m_rollingTime = 0f;
         gameObject.SetActive(false);

@@ -16,8 +16,6 @@ public class RollerButton : MonoBehaviour
 
     public void RollDice()
     {
-        Debug.Log("RollDice");
-
         if (m_random == null) {
             m_random = new System.Random();
         }
