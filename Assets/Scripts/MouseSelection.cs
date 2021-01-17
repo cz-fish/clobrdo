@@ -6,17 +6,18 @@ public class MouseSelection : MonoBehaviour
 {
     
     private GameState m_listener = null;
-    private bool m_enabled = false;
+    public bool Enabled {get; protected set;}
 
     private int m_pieceLayer = 0;
 
     void Start() {
+        Enabled = false;
         m_pieceLayer = LayerMask.NameToLayer("Pieces");
     }
 
     void Update()
     {
-        if (!m_enabled) {
+        if (!Enabled) {
             return;
         }
         if (Input.GetMouseButton(0)) {
@@ -44,11 +45,11 @@ public class MouseSelection : MonoBehaviour
     public void EnablePieceSelection(GameState listener)
     {
         m_listener = listener;
-        m_enabled = true;
+        Enabled = true;
     }
 
     public void DisablePieceSelection()
     {
-        m_enabled = false;
+        Enabled = false;
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 using Assets;
 
@@ -57,6 +58,9 @@ public class GameState : MonoBehaviour
     // length of the move (jumping) animation
     private float m_jumpLength = 0.5f;
 
+    private bool m_paused = false;
+    private bool m_mouseWasEnabledBeforePause = false;
+
     // Game start
     void Start()
     {
@@ -81,6 +85,14 @@ public class GameState : MonoBehaviour
     // Piece move animation
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.Escape)) {
+            if (m_paused) {
+                Resume();
+            } else {
+                Pause();
+            }
+        }
+
         if (m_move != null) {
             m_move.phase += Time.deltaTime;
             float jumpPercent = m_move.phase / m_jumpLength;
@@ -354,5 +366,31 @@ public class GameState : MonoBehaviour
 
         DisablePlayerInput();
         StartCoroutine(PieceMove(selectedMove));
+    }
+
+    public void Pause()
+    {
+        Time.timeScale = 0;
+        m_paused = true;
+        m_mouseWasEnabledBeforePause = m_mouseSelection.Enabled;
+        m_mouseSelection.DisablePieceSelection();
+        var menu = GameObject.Find("GameMenu").WithChild("InGameMenu");
+        menu.SetActive(true);
+    }
+
+    public void Resume()
+    {
+        m_paused = false;
+        var menu = GameObject.Find("GameMenu").WithChild("InGameMenu");
+        menu.SetActive(false);
+        Time.timeScale = 1;
+        if (m_mouseWasEnabledBeforePause) {
+            EnablePlayerInput();
+        }
+    }
+
+    public void QuitToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }
