@@ -370,6 +370,9 @@ public class GameState : MonoBehaviour
 
     public void Pause()
     {
+        if (m_paused) {
+            return;
+        }
         Time.timeScale = 0;
         m_paused = true;
         m_mouseWasEnabledBeforePause = m_mouseSelection.Enabled;
