@@ -120,6 +120,7 @@ public class GameState : MonoBehaviour
 
                 var piece = Instantiate(prefab, pos, Quaternion.identity).gameObject;
                 piece.transform.parent = parent.transform;
+                piece.AddComponent<PieceAnimation>();
                 piece.SetActive(true);
 
                 // Add animator and animation controller
