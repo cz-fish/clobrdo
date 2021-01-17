@@ -15,9 +15,6 @@ namespace Assets {
         // positions in the target place are 1000 .. 1003 for first player, 2000 .. 2003 for second player, ...
         protected List<int> m_piecePositions;
 
-        // If true, player who rolled 6 plays again
-        protected bool m_rollAgainOnSix;
-
         public class NextPlayer {
             public int nextPlayer;
         }
@@ -49,16 +46,13 @@ namespace Assets {
             get; protected set;
         }
 
-        // If startWithOnePieceUp, all players will start with one piece already spawned,
-        // so they don't need to wait to roll 6 first
-        public void Start(bool startWithOnePieceUp = false, bool rollAgainOnSix = false) {
-            m_rollAgainOnSix = rollAgainOnSix;
+        public void Start() {
             CurrentPlayer = 0;
             // place are pieces to homes
             m_piecePositions = new List<int>();
             for (var player = 0; player < NumPlayers; player++) {
                 for (var piece = 1; piece <= NumPiecesPerPlayer; piece++) {
-                    if (startWithOnePieceUp && piece == 1) {
+                    if (GameOptions.StartWithOnePiece && piece == 1) {
                         m_piecePositions.Add(PlayerStartingPos(player));
                     } else {
                         m_piecePositions.Add(-piece);
@@ -192,8 +186,7 @@ namespace Assets {
             if (piecesInTarget == NumPiecesPerPlayer) {
                 result.gameOver = new GameOver {winningPlayer = CurrentPlayer};
             } else {
-                UnityEngine.Debug.Log($"roll value {move.rollValue}, roll again on six {m_rollAgainOnSix}");
-                if (move.rollValue != 6 || !m_rollAgainOnSix) {
+                if (move.rollValue != 6 || !GameOptions.SixPlaysAgain) {
                     CurrentPlayer = (CurrentPlayer + 1) % NumPlayers;
                 }
                 result.nextPlayer = new NextPlayer {nextPlayer = CurrentPlayer};

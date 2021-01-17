@@ -11296,9 +11296,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c17528e59a42c4d4e958cf591d3e9b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithOnePieceUp: 1
-  rollAgainOnSix: 1
-  manualDiceRoll: 0
   players: 00000000010000000100000001000000
   playerSprites:
   - {fileID: -7067176810482676727, guid: 1590c09d90829ca48b5c35fd45e7bed0, type: 3}

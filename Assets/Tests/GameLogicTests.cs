@@ -5,6 +5,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
+using Assets;
+
 namespace Tests
 {
     public class GameLogicTests : Assets.GameLogic
@@ -12,6 +14,7 @@ namespace Tests
         [Test]
         public void BoardIsInitialized()
         {
+            GameOptions.StartWithOnePiece = false;
             this.Start();
             Assert.AreEqual(0, this.CurrentPlayer);
             foreach(var piece in this.m_piecePositions) {
@@ -22,7 +25,8 @@ namespace Tests
         [Test]
         public void BoardIsInitializedWithOnePieceUp()
         {
-            this.Start(true);
+            GameOptions.StartWithOnePiece = true;
+            this.Start();
             Assert.AreEqual(0, this.CurrentPlayer);
             for (var i = 0; i < this.m_piecePositions.Count; i++) {
                 if (i % NumPiecesPerPlayer == 0) {

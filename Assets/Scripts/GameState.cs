@@ -15,15 +15,6 @@ public class GameState : MonoBehaviour
         Ai
     }
 
-    // == Game options
-    // If true, each players starts with one piece already spawned
-    public bool startWithOnePieceUp = true;
-    // If true, player who rolled six keeps playing
-    public bool rollAgainOnSix = true;
-    // If true, player has to press the Roll button to roll the dice,
-    // otherwise it just rolls automatically.
-    public bool manualDiceRoll = false;
-
     public PlayerType[] players = {
         PlayerType.Human,
         PlayerType.Ai,
@@ -69,7 +60,7 @@ public class GameState : MonoBehaviour
     // Game start
     void Start()
     {
-        m_gameLogic.Start(startWithOnePieceUp, rollAgainOnSix);
+        m_gameLogic.Start();
         InitializePieces();
 
         // find references to Unity objects
@@ -223,7 +214,7 @@ public class GameState : MonoBehaviour
         yield return new WaitForSeconds(0.6f);
         m_diceValueImg.SetActive(false);
         m_playerImg.GetComponent<Image>().sprite = playerSprites[m_gameLogic.CurrentPlayer];
-        if (IsHumanPlayer() && manualDiceRoll) {
+        if (IsHumanPlayer() && GameOptions.ManualDice) {
             // Show the Roll button for the player to roll at their convenience
             m_rollButton.SetActive(true);
         } else {
