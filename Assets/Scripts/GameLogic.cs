@@ -65,6 +65,15 @@ namespace Assets {
                     }
                 }
             }
+            /*
+            // FIXME: just for gameover testing
+            m_piecePositions = new List<int>() {
+                1000, 1001, 1002, 37,
+                -1, -2, -3, -4,
+                -1, -2, -3, -4,
+                -1, -2, -3, -4
+            };
+            */
         }
 
         public List<Move> OnDiceRoll(int value) {

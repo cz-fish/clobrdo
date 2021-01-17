@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,7 +25,7 @@ public class GameState : MonoBehaviour
     public bool manualDiceRoll = false;
 
     public PlayerType[] players = {
-        PlayerType.Ai,
+        PlayerType.Human,
         PlayerType.Ai,
         PlayerType.Ai,
         PlayerType.Ai
@@ -164,6 +165,9 @@ public class GameState : MonoBehaviour
             return;
         }
 
+        // FIXME: just for gameover testing
+        //value = 6;
+
         Debug.Log($"Dice roll completed: value {value}");
 
         m_diceValueImg.GetComponent<Image>().sprite = diceSprites[value - 1];
@@ -273,11 +277,56 @@ public class GameState : MonoBehaviour
 
         if (result.gameOver != null) {
             Debug.Log("Game over");
-            // TODO: game over
+            GameOver();
         } else {
             StartCoroutine(NextPlayer());
         }
     }
+
+    string PlayerName(int playerId) {
+        // TODO: give player some names
+        var players = new Dictionary<int, string>() {
+            {0, "blue"},
+            {1, "yellow"},
+            {2, "red"},
+            {3, "green"}
+        };
+        if (players.ContainsKey(playerId)) {
+            return players[playerId];
+        } else {
+            return "unknown";
+        }
+    }
+
+    void GameOver() {
+        var gameCanvas = GameObject.Find("Canvas");
+        var endgameCanvas = GameObject.Find("GameOver");
+        var particles = GameObject.Find("ParticleEffects");
+
+        // disable main game canvas
+        foreach (Transform child in gameCanvas.transform) {
+            child.gameObject.SetActive(false);
+        }
+
+        bool win = IsHumanPlayer();
+        if (win) {
+            endgameCanvas.WithChild("TextWin").SetActive(true);
+            endgameCanvas.WithChild("WinnerName").SetActive(false);
+            var part = particles.WithChild("Win");
+            part.SetActive(true);
+            part.GetComponent<ParticleSystem>().Play();
+        } else {
+            endgameCanvas.WithChild("TextWin").SetActive(false);
+            var text = endgameCanvas.WithChild("WinnerName");
+            var tm = text.GetComponent<TextMeshProUGUI>();
+            tm.text = $"{PlayerName(m_gameLogic.CurrentPlayer)} WON!";
+            text.SetActive(true);
+            var part = particles.WithChild("Lose");
+            part.SetActive(true);
+            part.GetComponent<ParticleSystem>().Play();
+        }
+    }
+
 
     public void OnPieceSelected(GameObject pieceParent) {
         // The mouse raycast returns the piece parent object
