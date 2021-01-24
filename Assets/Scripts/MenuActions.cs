@@ -9,6 +9,8 @@ using Assets;
 public class MenuActions : MonoBehaviour
 {
     public GameObject OptionsMenu;
+    public Sprite PlainBackground;
+    public Sprite MainBackground;
 
     public void QuitClicked()
     {
@@ -25,6 +27,8 @@ public class MenuActions : MonoBehaviour
         GameOptions.ManualDice = GetToggleValue("ToggleManualDice");
         GameOptions.SixPlaysAgain = GetToggleValue("TogglePlaySix");
         GameOptions.StartWithOnePiece = GetToggleValue("ToggleStartWithOne");
+
+        GameObject.Find("MenuPanel").GetComponent<Image>().sprite = MainBackground;
         return;
 
         bool GetToggleValue(string name) {
@@ -34,6 +38,7 @@ public class MenuActions : MonoBehaviour
 
     public void LoadGameOptions()
     {
+        GameObject.Find("MenuPanel").GetComponent<Image>().sprite = PlainBackground;
         SetToggleValue("ToggleManualDice", GameOptions.ManualDice);
         SetToggleValue("TogglePlaySix", GameOptions.SixPlaysAgain);
         SetToggleValue("ToggleStartWithOne", GameOptions.StartWithOnePiece);
