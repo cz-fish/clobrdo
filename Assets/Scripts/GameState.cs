@@ -302,14 +302,11 @@ public class GameState : MonoBehaviour
     }
 
     void GameOver() {
-        var gameCanvas = GameObject.Find("Canvas");
         var endgameCanvas = GameObject.Find("GameOver");
         var particles = GameObject.Find("ParticleEffects");
 
-        // disable main game canvas
-        foreach (Transform child in gameCanvas.transform) {
-            child.gameObject.SetActive(false);
-        }
+        // Keep main game canvas active, so that the user can press the cross
+        // and go to menu
 
         bool win = IsHumanPlayer();
         if (win) {
