@@ -10,19 +10,6 @@ using Assets;
 
 public class GameState : MonoBehaviour
 {
-    // == Public types
-        public enum PlayerType {
-        Human,
-        Ai
-    }
-
-    public PlayerType[] players = {
-        PlayerType.Human,
-        PlayerType.Ai,
-        PlayerType.Ai,
-        PlayerType.Ai
-    };
-
     // == Unity objects
     // sprites drawn on the UI canvas
     public Sprite[] playerSprites;
@@ -180,12 +167,12 @@ public class GameState : MonoBehaviour
             Debug.Log("No possible moves, moving to next player");
             StartCoroutine(NextPlayer());
         } else {
-            var playerType = players[m_gameLogic.CurrentPlayer];
-            if (playerType == PlayerType.Human) {
+            var playerType = GameOptions.playerType[m_gameLogic.CurrentPlayer];
+            if (playerType == GameOptions.PlayerType.Human) {
                 Debug.Log($"Human turn, {possibleMoves.Count} moves");
                 HighlightPossibleMoves(possibleMoves);
                 EnablePlayerInput();
-            } else if (playerType == PlayerType.Ai) {
+            } else if (playerType == GameOptions.PlayerType.Ai) {
                 Debug.Log($"AI turn, {possibleMoves.Count} moves");
                 StartCoroutine(AiPlayerMove(possibleMoves));
             }
@@ -216,8 +203,8 @@ public class GameState : MonoBehaviour
     }
 
     bool IsHumanPlayer() {
-        var playerType = players[m_gameLogic.CurrentPlayer];
-        return playerType == PlayerType.Human;
+        var playerType = GameOptions.playerType[m_gameLogic.CurrentPlayer];
+        return playerType == GameOptions.PlayerType.Human;
     }
 
     IEnumerator NextPlayer() {
@@ -286,21 +273,6 @@ public class GameState : MonoBehaviour
         }
     }
 
-    string PlayerName(int playerId) {
-        // TODO: give player some names
-        var players = new Dictionary<int, string>() {
-            {0, "blue"},
-            {1, "yellow"},
-            {2, "red"},
-            {3, "green"}
-        };
-        if (players.ContainsKey(playerId)) {
-            return players[playerId];
-        } else {
-            return "unknown";
-        }
-    }
-
     void GameOver() {
         var endgameCanvas = GameObject.Find("GameOver");
         var particles = GameObject.Find("ParticleEffects");
@@ -319,7 +291,7 @@ public class GameState : MonoBehaviour
             endgameCanvas.WithChild("TextWin").SetActive(false);
             var text = endgameCanvas.WithChild("WinnerName");
             var tm = text.GetComponent<TextMeshProUGUI>();
-            tm.text = $"{PlayerName(m_gameLogic.CurrentPlayer)} WON!";
+            tm.text = $"{GameOptions.AiPlayerNames[m_gameLogic.CurrentPlayer]} WON!";
             text.SetActive(true);
             var part = particles.WithChild("Lose");
             part.SetActive(true);
