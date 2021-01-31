@@ -51,6 +51,11 @@ public class RollerButton : MonoBehaviour
         dice.transform.rotation = rot;
         dice.SetActive(true);
         dice.GetComponent<Rigidbody>().AddForce(push);
+        dice.GetComponent<Rigidbody>().AddTorque(
+            (float)(m_random.NextDouble()) * (forceMax - forceMin) + forceMin,
+            (float)(m_random.NextDouble()) * (forceMax - forceMin) + forceMin,
+            (float)(m_random.NextDouble()) * (forceMax - forceMin) + forceMin
+        );
     }
 
 }
