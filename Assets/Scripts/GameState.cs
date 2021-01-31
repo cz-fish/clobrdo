@@ -49,7 +49,7 @@ public class GameState : MonoBehaviour
     private bool m_mouseWasEnabledBeforePause = false;
 
     // Game start
-    void Start()
+    void Awake()
     {
         m_gameLogic.Start();
         InitializePieces();
@@ -60,6 +60,7 @@ public class GameState : MonoBehaviour
         m_playerImg = GameObject.Find("nextPlayerIcon");
 
         m_rollButton = GameObject.Find("rollButton");
+        m_rollButton.SetActive(false);
 
         m_dice = GameObject.Find("dice");
         m_dice.SetActive(false);
@@ -363,6 +364,7 @@ public class GameState : MonoBehaviour
 
     public void QuitToMenu()
     {
+        Resume();
         SceneManager.LoadScene("Menu");
     }
 }
