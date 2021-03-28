@@ -1,0 +1,15 @@
+Člobrdo - a dice game for four players
+
+One round of the game usually takes around 20-40 minutes.
+
+Each player has 4 pawns that all start in the starting house (except when a game setting is enabled that places one pawn of each player onto the track to speed up the game). The goal of the game is to move all the pawns to the destination house before other players do.
+
+Each pawn has to be spawned from the starting house and placed onto the main track, then complete a whole round around the board, before finally parking in the destination house.
+
+Players take turns to roll the dice. A player has to roll 6 to spawn one of their pawns from the starting house onto the track. When spawned, each pawn is placed on the spot matching the player's color. All pawns move on the track in the same direction - clockwise. A pawn moves by a number of places on the track according to the value of the dice roll, but cannot move to a place that is already occupied by a different pawn of the same color. However, a pawn can move to a spot occupied by a pawn of a different color. If this happens, the opponent's pawn is removed from the track back to the starting house. Once a pawn reaches the destination house, it is safe and it cannot be removed back to the starting house again.
+
+If the respective game option is enabled (as it is by default), a player that has rolled a 6 rolls again after their move. If a player rolls a number that doesn't allow them to move any of their pawns, the game moves on to the next player.
+
+When the value on the dice cannot be determined, the same player rolls again. Once the player has rolled the dice, the pawns that are able to move are visually highlighted.
+
+The game ends once the first player gets all of their pawns into their destination house.

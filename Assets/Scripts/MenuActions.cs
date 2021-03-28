@@ -102,4 +102,18 @@ public class MenuActions : MonoBehaviour
         GameOptions.playerType[playerNum] = GameOptions.PlayerType.Ai;
         SetPlayer(playerNum);
     }
+
+    public void ShowRules() {
+        GameObject.Find("MenuPanel").GetComponent<Image>().sprite = PlainBackground;
+    }
+
+    public void HideRules() {
+        GameObject.Find("MenuPanel").GetComponent<Image>().sprite = MainBackground;
+    }
+
+    public void ShowCredits() {
+    }
+
+    public void HideCredits() {
+    }
 }
