@@ -103,17 +103,11 @@ public class MenuActions : MonoBehaviour
         SetPlayer(playerNum);
     }
 
-    public void ShowRules() {
+    public void SetSimpleBackground() {
         GameObject.Find("MenuPanel").GetComponent<Image>().sprite = PlainBackground;
     }
 
-    public void HideRules() {
+    public void SetMainBackground() {
         GameObject.Find("MenuPanel").GetComponent<Image>().sprite = MainBackground;
-    }
-
-    public void ShowCredits() {
-    }
-
-    public void HideCredits() {
     }
 }
